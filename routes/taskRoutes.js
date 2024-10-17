@@ -7,7 +7,8 @@ const {
   getTasksByProjectName,
   UpdateTask,
   deleteAllTasks,
-  getTasksDueToday,
+  // getTasksDueToday,
+  getTodaysTasks,
   displayTasksByStatus,
 } = require("../controllers/taskController");
 const router = express.Router();
@@ -22,7 +23,8 @@ router.get("/", auth, displayAllTasks);
 router.get("/:id", auth, displayTask);
 router.get("/project/:projectName", auth, getTasksByProjectName);
 router.put("/update/:id", auth, upload.none(), UpdateTask);
-router.get("/dueToday", auth, getTasksDueToday);
+// router.get("/dueToday", auth, getTasksDueToday);
+router.post("/today", auth, getTodaysTasks);
 // router.get("/dueToday", getTasksDueToday);
 router.get("/status/:status", auth, displayTasksByStatus);
 

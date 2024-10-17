@@ -3,7 +3,9 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const multer = require("multer");
+const cors = require("cors");
 
+app.use(cors());
 // Middleware
 app.use(express.json()); // Parses JSON
 app.use(express.urlencoded({ extended: true }));
