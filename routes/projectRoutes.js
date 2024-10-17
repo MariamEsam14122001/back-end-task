@@ -7,8 +7,7 @@ const {
 const multer = require("multer");
 const upload = multer({ dest: "../uploads/" });
 
-const auth = require("../Middleware");
-
+const auth = require("../Middleware/auth");
 
 const router = express.Router();
 

@@ -195,11 +195,11 @@ const getTodaysTasks = async (req, res) => {
     endOfDay.setHours(23, 59, 59, 999);
 
     // Assuming userId is available from authenticated user
-    // const userId = req.user._id;
+    const userId = req.user._id;
 
     // Query for tasks due on the specified date
     const todaysTasks = await Task.find({
-      // userId: userId,
+      userId: userId,
       dueDate: { $gte: startOfDay, $lte: endOfDay },
     });
 
@@ -218,73 +218,7 @@ const getTodaysTasks = async (req, res) => {
   }
 };
 
-// const getTodaysTasks = async (req, res) => {
-//   try {
-//     const startOfDay = new Date();
-//     startOfDay.setHours(0, 0, 0, 0);
-
-//     const endOfDay = new Date();
-//     endOfDay.setHours(23, 59, 59, 999);
-
-//     const userId = mongoose.Types.ObjectId(req.user._id);
-
-//     const todaysTasks = await Task.find({
-//        userId,
-//       dueDate: { $gte: startOfDay, $lte: endOfDay }
-//     });
-
-//     res.status(200).json({
-//       success: true,
-//       data: todaysTasks
-//     });
-//   } catch (error) {
-//     console.error("Error fetching today's tasks:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error fetching task",
-//       error: error.message
-//     });
-//   }
-// };
-
-// const moment = require("moment");
-
-// const getTasksDueToday = async (req, res) => {
-//   try {
-//     const today = moment().startOf("day").toDate(); // Get the start of the current day
-//     const userId = req.user._id;
-
-//     console.log("Fetching tasks for userId:", userId);
-
-//     const tasks = await Task.find({
-//       userId: userId,
-//       dueDate: {
-//         $gte: today,
-//         $lt: moment(today).add(1, "days").toDate(),
-//       },
-//       status: { $ne: "done" },
-//     }).sort({ time: 1 });
-
-//     if (tasks.length === 0) {
-//       return res.status(404).json({ message: "No tasks found for today" });
-//     }
-
-//     const orderedTasks = tasks.map((task, index) => ({
-//       orderedNumber: index + 1,
-//       ...task._doc,
-//     }));
-
-//     res.status(200).json(orderedTasks);
-//   } catch (error) {
-//     console.error("Error fetching tasks:", error);
-//     res
-//       .status(500)
-//       .json({ message: "Error fetching tasks", error: error.message });
-//   }
-// };
-
 module.exports = {
-  // getTasksDueToday,
   getTodaysTasks,
   UpdateTask,
   getTasksByProjectName,

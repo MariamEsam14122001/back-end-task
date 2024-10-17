@@ -12,7 +12,7 @@ const {
   displayTasksByStatus,
 } = require("../controllers/taskController");
 const router = express.Router();
-const auth = require("../Middleware");
+const auth = require("../Middleware/auth");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
@@ -23,9 +23,7 @@ router.get("/", auth, displayAllTasks);
 router.get("/:id", auth, displayTask);
 router.get("/project/:projectName", auth, getTasksByProjectName);
 router.put("/update/:id", auth, upload.none(), UpdateTask);
-// router.get("/dueToday", auth, getTasksDueToday);
 router.post("/today", auth, getTodaysTasks);
-// router.get("/dueToday", getTasksDueToday);
 router.get("/status/:status", auth, displayTasksByStatus);
 
 module.exports = router;

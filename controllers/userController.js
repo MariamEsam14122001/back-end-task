@@ -1,64 +1,45 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const multer = require("multer");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 
-// Set up storage for multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1024 * 1024 * 5 },
-});
-
 const signup = async (req, res) => {
+  const { name, email, password } = req.body;
+  const image = req.file ? req.file.path : null; // Get the image path from multer
+
+  // Input validation
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
   try {
-    const { name, password, email } = req.body;
-    console.log("Uploaded file:", req.file);
-
-    // Check for missing fields
-    if (!name || !password || !email) {
-      return res.status(400).json({ message: "Please fill in all fields." });
-    }
-
-    // Check if the email is already in use
+    // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already exists." });
+      return res.status(400).json({ message: "Email already in use." });
     }
 
-    // Hash password
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    // Check if file was uploaded and get the path, or set to null
-    const imagePath = req.file ? req.file.path : null;
 
-    // Create new user
+    // Create a new user
     const newUser = new User({
       name,
-      password: hashedPassword,
       email,
-      image: imagePath,
+      password: hashedPassword,
+      image, // Store the image path in the database
     });
+
+    // Save the user to the database
     await newUser.save();
 
-    // Success response
-    res.status(201).json({
-      message: "User created successfully.",
-      user: { name, email, image: imagePath },
-    });
-  } catch (error) {
-    console.error("Error during signup:", error); // Additional logging
+    // Respond with success
     res
-      .status(500)
-      .json({ message: "Error registering user", error: error.message });
+      .status(201)
+      .json({ message: "User registered successfully!", user: newUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error registering user." });
   }
 };
 
@@ -81,14 +62,18 @@ const login = async (req, res) => {
     }
 
     // Generate token
-    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: "1d" });
+    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "1d",
+    });
     res.status(200).json({
       message: "User logged in successfully",
       user: { name: user.name, email: user.email, image: user.image },
       token,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error logging in user", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error logging in user", error: error.message });
   }
 };
 
@@ -109,4 +94,4 @@ const displayUserInfo = async (req, res) => {
       .json({ message: "Error displaying user info", error: error.message });
   }
 };
-module.exports = { signup, login, upload, displayUserInfo };
+module.exports = { signup, login, displayUserInfo };
