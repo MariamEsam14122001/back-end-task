@@ -12,6 +12,6 @@ const TaskSchema = new mongoose.Schema({
     enum: ["in progress", "done", "to do"],
     default: "to do",
   },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
 });
-module.exports = mongoose.model("Task", TaskSchema);
+module.exports = mongoose.model("task", TaskSchema);
